@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City of Boston Parking Sign Analyzer - iPhone Prototype</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Lora:wght@400&display=swap">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%);
+            font-family: 'Lora', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .font-montserrat {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .font-lora {
+            font-family: 'Lora', sans-serif;
+        }
+        .bg-parking-photo {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzc1IiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDM3NSAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Z2ciPgo8cmVjdCB3aWR0aD0iMzc1IiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzM3NDE1MSIvPgo8cGF0aCBkPSJNMCAxMDBMMzc1IDEwMCIgc3Ryb2tlPSIjNjM3NjkxIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuMyIvPgo8cGF0aCBkPSJNMTAwIDBMMTAwIDIwMCIgc3Ryb2tlPSIjNjM3NjkxIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuMyIvPgo8cGF0aCBkPSJNMjc1IDBMMjcwIDIwMCIgc3Ryb2tlPSIjNjM3NjkxIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuMyIvPgo8L3N2Zz4K');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* iPhone Frame Styles */
+        .iphone-frame {
+            width: 375px;
+            height: 812px;
+            background: #1a1a1a;
+            border-radius: 40px;
+            padding: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .iphone-screen {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #1a1a1a;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+
+        .home-indicator {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 134px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 3px;
+            z-index: 10;
+        }
+
+        .prototype-content {
+            width: 100%;
+            height: 100%;
+            background: #111827;
+            padding: 0;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-frame">
+        <div class="iphone-screen">
+            <div class="notch"></div>
+            <div class="home-indicator"></div>
+            
+            <div class="prototype-content">
+                <div id="root"></div>
+            </div>
+        </div>
+    </div>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+    const { useState, useRef, useEffect } = React;
+
+    const App = () => {
+        const [imageFile, setImageFile] = useState(null);
+        const [regulations, setRegulations] = useState('');
+        const [isLoading, setIsLoading] = useState(false);
+        const [error, setError] = useState('');
+        const [language, setLanguage] = useState('en');
+        const [isAnalyzed, setIsAnalyzed] = useState(false);
+
+        const translations = [
+            "Select your language:",
+            "Selecciona tu idioma:",
+            "选择你的语言:",
+            "Selecione seu idioma:"
+        ];
+        const [rotatingText, setRotatingText] = useState(translations[0]);
+
+        const fileInputRef = useRef(null);
+
+        const languages = [
+            { code: 'en', name: 'English' },
+            { code: 'es', name: 'Español' },
+            { code: 'zh', name: '中文' },
+            { code: 'pt', name: 'Português' },
+        ];
+
+        useEffect(() => {
+            let currentIndex = 0;
+            const intervalId = setInterval(() => {
+                currentIndex = (currentIndex + 1) % translations.length;
+                setRotatingText(translations[currentIndex]);
+            }, 2000);
+
+            return () => clearInterval(intervalId);
+        }, []);
+
+        const handleImageUpload = async (event) => {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            setRegulations('');
+            setError('');
+            setIsLoading(true);
+            setIsAnalyzed(false);
+
+            setImageFile(URL.createObjectURL(file));
+
+            setTimeout(() => {
+                try {
+                    const newResponse = "You can park here - but be sure to move you car by 5:00pm! After that, this space will become a valet zone.";
+                    setRegulations(newResponse);
+                    setIsAnalyzed(true);
+                } catch (err) {
+                    setError("Something went wrong during analysis. Please try again.");
+                    console.error("API simulation failed:", err);
+                } finally {
+                    setIsLoading(false);
+                }
+            }, 2000);
+        };
+
+        const triggerFileInput = () => {
+            fileInputRef.current.click();
+        };
+
+        return (
+            <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-start py-8 px-6 antialiased text-gray-100 transition-colors duration-300">
+                <div className="w-full max-w-sm bg-gray-800 rounded-xl shadow-xl overflow-hidden">
+                    
+                    {/* Header section */}
+                    <div className="bg-blue-950 text-white py-6 flex flex-col items-center justify-center rounded-t-xl">
+                        <img src="https://patterns.boston.gov/images/public/logo-white_red.png?t23na4" alt="Boston.gov" className="h-10 w-auto" />
+                        <h1 className="text-2xl font-extrabold leading-tight mt-3 font-montserrat text-center">
+                            <span className="sr-only">City of Boston</span>
+                            Parking Sign Analyzer
+                        </h1>
+                    </div>
+
+                    <div className="p-6 bg-parking-photo space-y-5">
+                        <p className="text-center text-gray-300 text-base font-lora">
+                            Snap a picture of a parking sign, and we'll tell you the rules.
+                        </p>
+
+                        {/* Language Selection Dropdown */}
+                        <div className="text-center">
+                            <label htmlFor="language-select" className="block text-base font-medium text-gray-300 mb-2 font-lora">
+                                {rotatingText}
+                            </label>
+                            <select
+                                id="language-select"
+                                value={language}
+                                onChange={(e) => setLanguage(e.target.value)}
+                                className="mt-1 block w-full pl-3 pr-10 py-2 text-lg border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm bg-gray-700 text-gray-100 font-lora"
+                            >
+                                {languages.map((lang) => (
+                                    <option key={lang.code} value={lang.code}>
+                                        {lang.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Image and buttons container */}
+                        <div className="flex flex-col items-center justify-center space-y-4">
+                            <div className="w-full h-64 bg-gray-700 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-600 overflow-hidden">
+                                {imageFile ? (
+                                    <img src={imageFile} alt="Uploaded parking sign" className="object-cover w-full h-full rounded-lg" />
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center text-gray-400 p-4 text-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 mb-2">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175m4.331-.444c1.249-1.249 2.744-1.921 4.545-1.921-1.247 0-2.492.203-3.619.645-.337.126-.66.286-.975.474M9 13.5m-3 0a3 3 0 1 1 6 0a3 3 0 0 1 -6 0m12 0a9 9 0 1 1 -18 0a9 9 0 0 1 18 0m-9 3c-1.38 0-2.632-.574-3.535-1.554M12 10.5h.008v.008H12z" />
+                                        </svg>
+                                        <p className="text-lg">No image uploaded yet.</p>
+                                    </div>
+                                )}
+                            </div>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                                ref={fileInputRef}
+                                className="hidden"
+                            />
+                            
+                            {!isAnalyzed ? (
+                                <button
+                                    onClick={triggerFileInput}
+                                    className="w-full px-6 py-3 font-semibold text-lg text-white bg-red-600 rounded-full shadow-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50 transition-all duration-300 transform active:scale-95"
+                                >
+                                    Take a Photo
+                                </button>
+                            ) : (
+                                <div className="w-full flex flex-col space-y-4">
+                                    <button
+                                        className="w-full px-6 py-3 font-semibold text-lg text-white bg-blue-600 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-300 transform active:scale-95"
+                                    >
+                                        Text me a reminder
+                                    </button>
+                                    <button
+                                        className="w-full px-6 py-3 font-semibold text-lg text-white bg-red-600 rounded-full shadow-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50 transition-all duration-300 transform active:scale-95"
+                                    >
+                                        Report a Sign issue
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Conditional rendering for the results box */}
+                        { (isLoading || isAnalyzed) && (
+                            <div className="p-6 bg-gray-700 rounded-lg shadow-inner flex flex-col items-center justify-center min-h-[120px]">
+                                {isLoading ? (
+                                    <p className="text-blue-400 animate-pulse font-medium text-lg">Analyzing sign...</p>
+                                ) : error ? (
+                                    <p className="text-red-400 font-medium text-center text-lg">{error}</p>
+                                ) : regulations ? (
+                                    <div className="prose dark:prose-invert max-w-none w-full text-center text-lg">
+                                        <p>{regulations}</p>
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-400 text-center font-lora text-lg">
+                                        We'll let you know if you can park here and when you need to move your car.
+                                    </p>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

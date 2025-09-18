@@ -1,0 +1,75 @@
+# Boston Parking PWA - Git Ignore File
+
+# Environment variables (NEVER commit secrets!)
+.env
+.env.local
+.env.production
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Uploaded files
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Dependencies
+node_modules/
+*.egg-info/
+
+# Build outputs
+dist/
+build/
+*.build
+
+# Database
+*.db
+*.sqlite3
+
+# Cache
+.cache/
+*.cache
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Google Cloud
+.gcloud/
+service-account-key.json
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/

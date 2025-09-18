@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boston Parking Sign Analyzer</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Lora:wght@400&display=swap">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- iPhone Frame -->
+    <div class="iphone-frame">
+        <div class="iphone-screen">
+            <div class="notch"></div>
+            <div class="home-indicator"></div>
+            
+            <div class="prototype-content">
+                <div class="min-h-screen bg-gray-900 flex flex-col items-center justify-start py-8 px-6 antialiased text-gray-100 transition-colors duration-300">
+                    <div class="w-full max-w-sm bg-gray-800 rounded-xl shadow-xl overflow-hidden">
+                        
+                        <!-- Header section -->
+                        <div class="bg-blue-950 text-white py-6 flex flex-col items-center justify-center rounded-t-xl">
+                            <img src="https://patterns.boston.gov/images/public/logo-white_red.png?t23na4" alt="Boston.gov" class="h-10 w-auto" />
+                            <h1 class="text-2xl font-extrabold leading-tight mt-3 font-montserrat text-center">
+                                Parking Sign Analyzer
+                            </h1>
+                        </div>
+
+                        <div class="p-6 bg-parking-photo space-y-5">
+                            <p class="text-center text-gray-300 text-base font-lora">
+                                Snap a picture of a parking sign, and we'll tell you the rules.
+                            </p>
+
+                            <!-- Language Selection Dropdown -->
+                            <div class="text-center">
+                                <label for="language-select" class="block text-base font-medium text-gray-300 mb-2 font-lora">
+                                    <span id="rotating-text">Select your language:</span>
+                                </label>
+                                <select
+                                    id="language-select"
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-lg border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm bg-gray-700 text-gray-100 font-lora"
+                                >
+                                    <option value="en">English</option>
+                                    <option value="es">Español</option>
+                                    <option value="zh">中文</option>
+                                    <option value="pt">Português</option>
+                                </select>
+                            </div>
+
+                            <!-- Image and buttons container -->
+                            <div class="flex flex-col items-center justify-center space-y-4">
+                                <div class="w-full h-64 bg-gray-700 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-600 overflow-hidden">
+                                    <img id="uploaded-image" class="object-cover w-full h-full rounded-lg hidden" alt="Uploaded parking sign" />
+                                    <div id="upload-placeholder" class="flex flex-col items-center justify-center text-gray-400 p-4 text-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mb-2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175m4.331-.444c1.249-1.249 2.744-1.921 4.545-1.921-1.247 0-2.492.203-3.619.645-.337.126-.66.286-.975.474M9 13.5m-3 0a3 3 0 1 1 6 0a3 3 0 0 1 -6 0m12 0a9 9 0 1 1 -18 0a9 9 0 0 1 18 0m-9 3c-1.38 0-2.632-.574-3.535-1.554M12 10.5h.008v.008H12z" />
+                                        </svg>
+                                        <p class="text-lg">No image uploaded yet.</p>
+                                    </div>
+                                </div>
+                                
+                                <input type="file" id="file-input" accept="image/*" class="hidden" />
+                                
+                                <div id="upload-button-container">
+                                    <button
+                                        id="upload-button"
+                                        class="w-full px-6 py-3 font-semibold text-lg text-white bg-red-600 rounded-full shadow-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50 transition-all duration-300 transform active:scale-95"
+                                    >
+                                        Take a Photo
+                                    </button>
+                                </div>
+
+                                <div id="action-buttons" class="w-full flex-col space-y-4 hidden">
+                                    <button
+                                        id="reminder-button"
+                                        class="w-full px-6 py-3 font-semibold text-lg text-white bg-blue-600 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-300 transform active:scale-95"
+                                    >
+                                        Text me a reminder
+                                    </button>
+                                    <button
+                                        id="report-button"
+                                        class="w-full px-6 py-3 font-semibold text-lg text-white bg-red-600 rounded-full shadow-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50 transition-all duration-300 transform active:scale-95"
+                                    >
+                                        Report a Sign issue
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Results section -->
+                            <div id="results-section" class="p-6 bg-gray-700 rounded-lg shadow-inner flex flex-col items-center justify-center min-h-[120px] hidden">
+                                <div id="loading" class="hidden">
+                                    <p class="text-blue-400 animate-pulse font-medium text-lg">Analyzing sign...</p>
+                                </div>
+                                <div id="error" class="hidden">
+                                    <p class="text-red-400 font-medium text-center text-lg"></p>
+                                </div>
+                                <div id="results" class="hidden">
+                                    <div class="prose dark:prose-invert max-w-none w-full text-center text-lg">
+                                        <p id="results-text"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
