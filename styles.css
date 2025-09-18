@@ -1,0 +1,112 @@
+/* Boston Parking Analyzer Styles */
+
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%);
+    font-family: 'Lora', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.font-montserrat {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.font-lora {
+    font-family: 'Lora', sans-serif;
+}
+
+.bg-parking-photo {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                      url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzc1IiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDM3NSAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Z2ciPgo8cmVjdCB3aWR0aD0iMzc1IiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzM3NDE1MSIvPgo8cGF0aCBkPSJNMCAxMDBMMzc1IDEwMCIgc3Ryb2tlPSIjNjM3NjkxIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuMyIvPgo8cGF0aCBkPSJNMTAwIDBMMTAwIDIwMCIgc3Ryb2tlPSIjNjM3NjkxIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuMyIvPgo8cGF0aCBkPSJNMjc1IDBMMjcwIDIwMCIgc3Ryb2tlPSIjNjM3NjkxIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuMyIvPgo8L3N2Zz4K');
+    background-size: cover;
+    background-position: center;
+}
+
+/* iPhone Frame Styles */
+.iphone-frame {
+    width: 375px;
+    height: 812px;
+    background: #1a1a1a;
+    border-radius: 40px;
+    padding: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    position: relative;
+}
+
+.iphone-screen {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    border-radius: 32px;
+    overflow: hidden;
+    position: relative;
+}
+
+.notch {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 30px;
+    background: #1a1a1a;
+    border-radius: 0 0 20px 20px;
+    z-index: 10;
+}
+
+.home-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 3px;
+    z-index: 10;
+}
+
+.prototype-content {
+    width: 100%;
+    height: 100%;
+    background: #111827;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+/* Loading animation */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Button hover effects */
+button {
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+/* File input styling */
+input[type="file"] {
+    display: none;
+}
