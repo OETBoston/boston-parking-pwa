@@ -4,13 +4,15 @@ Permit holder?
 Date/Time
 
 Conduct the following operation: 
-Explain the all of the regulations in plain english.  
-Make a determination about which signs apply to person taking the photo (hint:  If the sign seems to be on the right side of the road, the sign regulating the space to the right of the sign is likely the revelvant policy and vic versa for signs on the left hand side of the street)
 
 Answer to following questions for the user: 
 Can I Park here?   (Yes/No)
 
 When do I have to move my car next? 
+
+Then Explain the all of the regulations in plain english.  
+Make a determination about which signs apply to person taking the photo (hint:  If the sign seems to be on the right side of the road, the sign regulating the space to the right of the sign is likely the revelvant policy and vic versa for signs on the left hand side of the street)
+
 
 Remember:  
 1) stopping is inclusive of parking.  If a sign says no stopping, that means you cannot park there. 

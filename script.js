@@ -1,9 +1,13 @@
-// Boston Parking Analyzer - Fixed Version
+// Boston Parking Analyzer - API Version
 
 class ParkingAnalyzer {
     constructor() {
         this.isAnalyzed = false;
         this.currentLanguage = 'en';
+        
+        // API endpoint - change this based on your testing/deployment stage
+        this.apiEndpoint = 'http://localhost:8080';  // For local testing
+        // When deployed, change to: 'https://your-region-your-project.cloudfunctions.net/analyze-parking'
         
         this.translations = [
             "Select your language:",
@@ -95,6 +99,18 @@ class ParkingAnalyzer {
 
         console.log('Processing file:', file.name);
 
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            this.showError('Please upload an image file (JPG, PNG, etc.).');
+            return;
+        }
+
+        // Check file size (optional - limit to 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            this.showError('File too large. Please upload an image smaller than 10MB.');
+            return;
+        }
+
         // Reset state
         this.resetAnalysis();
         
@@ -105,8 +121,8 @@ class ParkingAnalyzer {
         this.showLoading();
         
         try {
-            // Simulate analysis (replace with real API call later)
-            const result = await this.simulateAnalysis();
+            // Call the real API instead of simulation
+            const result = await this.callGeminiAPI(file);
             this.showResults(result);
             this.showActionButtons();
             this.isAnalyzed = true;
@@ -114,6 +130,46 @@ class ParkingAnalyzer {
         } catch (error) {
             console.error('Analysis failed:', error);
             this.showError('Something went wrong during analysis. Please try again.');
+        }
+    }
+
+    // NEW METHOD: Call the actual Gemini API via your Cloud Function
+    async callGeminiAPI(imageFile) {
+        console.log('Calling Gemini API...');
+        
+        // Create FormData to send the image file
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        formData.append('language', this.currentLanguage);
+
+        try {
+            const response = await fetch(this.apiEndpoint, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            
+            // Your Cloud Function returns JSON like: {"result": "parking analysis text"}
+            return data.result || data.message || 'Analysis completed but no result returned.';
+            
+        } catch (error) {
+            console.error('API call error:', error);
+            
+            // More specific error messages
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                throw new Error('Cannot connect to analysis server. Make sure it\'s running.');
+            } else if (error.message.includes('404')) {
+                throw new Error('Analysis service not found. Check the server URL.');
+            } else if (error.message.includes('500')) {
+                throw new Error('Server error during analysis. Please try again.');
+            } else {
+                throw new Error('Failed to analyze image. Please check your connection and try again.');
+            }
         }
     }
 
@@ -211,9 +267,9 @@ class ParkingAnalyzer {
         if (uploadContainer) uploadContainer.classList.remove('hidden');
     }
 
+    // Keep the simulation method for testing when API isn't ready
     async simulateAnalysis() {
         console.log('Starting analysis simulation...');
-        // Mock implementation - replace with real API call later
         return new Promise((resolve) => {
             setTimeout(() => {
                 const result = "You can park here - but be sure to move your car by 5:00pm! After that, this space will become a valet zone.";

@@ -1,5 +1,4 @@
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 
@@ -12,7 +11,7 @@ def analyze_parking_local(image_path):
     """Local version for testing - takes a file path instead of HTTP upload"""
     
     try:
-        # Set up the API client (same as your original script)
+        # Set up the API client
         load_dotenv()
         api_key = os.getenv("API_KEY")
         
@@ -20,32 +19,40 @@ def analyze_parking_local(image_path):
             print("Error: API_KEY not found in environment variables")
             return None
         
-        client = genai.Client(api_key=api_key)
+        # Configure the API (modern way)
+        genai.configure(api_key=api_key)
+        print("API configured successfully")
         
         # Load the text files
         try:
             system_instruction = load_file_content("system_instructions2.txt")
             prompt = load_file_content("prompt2.txt")
+            print("Prompt files loaded successfully")
         except FileNotFoundError as e:
             print(f"Error: Required file not found: {e}")
             return None
         
         # Upload the image to Gemini
-        gemini_file = client.files.upload(file=image_path)
+        print(f"Uploading image: {image_path}")
+        gemini_file = genai.upload_file(image_path)
+        print("Image uploaded successfully")
         
-        # Make the API call (identical to Cloud Function)
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            config=types.GenerateContentConfig(
-                system_instruction=system_instruction
-            ),
-            contents=[gemini_file, prompt],
+        # Create the model and make the API call
+        print("Creating model and making API call...")
+        model = genai.GenerativeModel(
+            model_name="gemini-1.5-flash",
+            system_instruction=system_instruction
         )
+        
+        response = model.generate_content([gemini_file, prompt])
+        print("API call successful")
         
         return response.text
         
     except Exception as e:
         print(f"Error during analysis: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 # Test it locally
@@ -53,13 +60,18 @@ if __name__ == "__main__":
     # Test with a local image file
     image_path = "beach_st_signs/118.jpg"  # or whatever test image you have
     
-    print("Testing parking analysis...")
-    result = analyze_parking_local(image_path)
-    
-    if result:
-        print("\n" + "="*50)
-        print("ANALYSIS RESULT:")
-        print("="*50)
-        print(result)
+    # Check if the image file exists
+    if not os.path.exists(image_path):
+        print(f"Error: Image file not found: {image_path}")
+        print("Please update the image_path variable to point to a real image file.")
     else:
-        print("Analysis failed - check the error messages above")
+        print("Testing parking analysis...")
+        result = analyze_parking_local(image_path)
+        
+        if result:
+            print("\n" + "="*50)
+            print("ANALYSIS RESULT:")
+            print("="*50)
+            print(result)
+        else:
+            print("Analysis failed - check the error messages above")
