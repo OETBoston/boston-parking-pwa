@@ -6,7 +6,7 @@ class ParkingAnalyzer {
         this.currentLanguage = 'en';
         
         // API endpoint - change this based on your testing/deployment stage
-        this.apiEndpoint = 'http://localhost:8080';  // For local testing
+        this.apiEndpoint = 'https://us-east1-can-i-park-here-463118.cloudfunctions.net/analyze-parking';  // For local testing
         // When deployed, change to: 'https://your-region-your-project.cloudfunctions.net/analyze-parking'
         
         this.translations = [
