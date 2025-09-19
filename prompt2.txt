@@ -1,5 +1,5 @@
 Analyze this parking sign for the following scenario:
 - Vehicle Type: car
 - Current situation: It's currently 2:30 PM on a Tuesday
-Based on these details and the sign regulations, provide a clear answer to whether a person can park there, why, and when they must move their car.
+Based on these details and the sign regulations, provide a clear answer to whether a person can park there, why, and when they must move their car.  Keep it brief. 
 

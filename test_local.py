@@ -58,7 +58,7 @@ def analyze_parking_local(image_path):
 # Test it locally
 if __name__ == "__main__":
     # Test with a local image file
-    image_path = "beach_st_signs/118.jpg"  # or whatever test image you have
+    image_path = "401.jpg"  # or whatever test image you have
     
     # Check if the image file exists
     if not os.path.exists(image_path):
